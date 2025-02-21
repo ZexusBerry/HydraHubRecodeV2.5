@@ -1206,28 +1206,38 @@ local function getObjGen()
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+-- Создаём watermark
 local Watermark = Instance.new("TextLabel")
 Watermark.Name = "Watermark"
 Watermark.Parent = Gui.Window
 Watermark.BackgroundTransparency = 1
-Watermark.Size = UDim2.new(0.3, 0, 0.03, 0) -- Чуть компактнее
+Watermark.Size = UDim2.new(0.35, 0, 0.04, 0) -- Чуть шире и выше
 Watermark.Font = Enum.Font.GothamBold
 Watermark.Text = "SigmaHub | nil | nil"
 Watermark.TextColor3 = Color3.fromRGB(100, 200, 255) -- Голубой оттенок
-Watermark.TextSize = 16
+Watermark.TextSize = 18 -- Чуть больше размер текста
 Watermark.TextStrokeTransparency = 0
-Watermark.TextStrokeColor3 = Color3.fromRGB(50, 50, 150) -- Темно-синий контур
+Watermark.TextStrokeColor3 = Color3.fromRGB(50, 50, 150) -- Тёмно-синий контур
 Watermark.TextXAlignment = Enum.TextXAlignment.Left
-Watermark.Position = UDim2.new(0.02, 0, 0.02, 0) -- Немного отступа от угла
+Watermark.Position = UDim2.new(-0.3, 0, -0.1, 0) -- Начальное положение (за экраном)
 
--- Создаем эффект свечения
+-- Добавляем неоновый эффект свечения
 local Glow = Instance.new("UIStroke")
 Glow.Parent = Watermark
 Glow.Color = Color3.fromRGB(180, 80, 255) -- Фиолетовый оттенок
-Glow.Thickness = 2
-Glow.Transparency = 0.4 -- Легкая прозрачность
+Glow.Thickness = 3 -- Более чёткое свечение
+Glow.Transparency = 0.3 -- Лёгкая прозрачность
 
--- Флаг для отслеживания перемещения
+-- Плавное появление watermark'а (чуть выше и левее)
+local function ShowWatermark()
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local goal = {Position = UDim2.new(0.02, 0, 0.02, 0)}
+    local tween = TweenService:Create(Watermark, tweenInfo, goal)
+    tween:Play()
+end
+task.spawn(ShowWatermark)
+
+-- Перетаскивание watermark'а
 local dragging = false
 local dragStart, startPos
 
@@ -1262,11 +1272,11 @@ Watermark.InputBegan:Connect(onInputBegan)
 Watermark.InputChanged:Connect(onInputChanged)
 UserInputService.InputEnded:Connect(onInputEnded)
 
--- Плавное движение watermark'а (цикличное)
+-- Анимация watermark'а (движение туда-сюда)
 local function AnimateWatermark()
     while true do
         local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
-        local goal = {Position = UDim2.new(0.7, 0, 0.02, 0)}
+        local goal = {Position = UDim2.new(0.07, 0, 0.02, 0)}
         local tween = TweenService:Create(Watermark, tweenInfo, goal)
         tween:Play()
         tween.Completed:Wait()
@@ -1274,6 +1284,18 @@ local function AnimateWatermark()
 end
 
 task.spawn(AnimateWatermark)
+
+-- Закрытие watermark'а по нажатию Insert
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        closeMenu()
+        local tweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local goal = {Position = UDim2.new(-0.3, 0, -0.1, 0)}
+        local tween = TweenService:Create(Watermark, tweenInfo, goal)
+        tween:Play()
+    end
+end)
+
 
 
             Gui.UIPadding_6.Parent = Gui.Window
