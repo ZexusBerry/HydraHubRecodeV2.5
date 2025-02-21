@@ -1231,6 +1231,7 @@ WatermarkText.Text = "SigmaHub | " .. player.Name .. " | nil"
 WatermarkText.TextColor3 = Color3.fromRGB(100, 200, 255)
 WatermarkText.TextSize = 18
 WatermarkText.TextStrokeTransparency = 0
+Watermark.Position = UDim2.new(0.02, 0, 0.02, 0)
 WatermarkText.TextStrokeColor3 = Color3.fromRGB(50, 50, 150)
 WatermarkText.TextXAlignment = Enum.TextXAlignment.Left
 
