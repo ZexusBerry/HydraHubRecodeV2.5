@@ -1203,18 +1203,41 @@ local function getObjGen()
             Gui.Window.BackgroundTransparency = 1.000
             Gui.Window.Size = UDim2.new(1, 0, 1, 0)
 
-            Gui.Watermark.Name = "Watermark"
-            Gui.Watermark.Parent = Gui.Window
-            Gui.Watermark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Gui.Watermark.BackgroundTransparency = 1.000
-            Gui.Watermark.Size = UDim2.new(0.5, 0, 0.0199999996, 0)
-            Gui.Watermark.Font = Enum.Font.Gotham
-            Gui.Watermark.Text = "hydrahub v2 | nil | nil"
-            Gui.Watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Gui.Watermark.TextSize = 14.000
-            Gui.Watermark.TextStrokeTransparency = 0.800
-            Gui.Watermark.TextXAlignment = Enum.TextXAlignment.Left
-            Gui.Watermark.Position = UDim2.new(0, 0, 0, 0)
+local TweenService = game:GetService("TweenService")
+
+local Watermark = Instance.new("TextLabel")
+Watermark.Name = "Watermark"
+Watermark.Parent = Gui.Window
+Watermark.BackgroundTransparency = 1
+Watermark.Size = UDim2.new(0.3, 0, 0.03, 0) -- Чуть компактнее
+Watermark.Font = Enum.Font.GothamBold
+Watermark.Text = "SigmaHub | nil | nil"
+Watermark.TextColor3 = Color3.fromRGB(100, 200, 255) -- Голубой оттенок
+Watermark.TextSize = 16
+Watermark.TextStrokeTransparency = 0
+Watermark.TextStrokeColor3 = Color3.fromRGB(50, 50, 150) -- Темно-синий контур
+Watermark.TextXAlignment = Enum.TextXAlignment.Left
+Watermark.Position = UDim2.new(0.02, 0, 0.02, 0) -- Немного отступа от угла
+
+-- Создаем эффект свечения
+local Glow = Instance.new("UIStroke")
+Glow.Parent = Watermark
+Glow.Color = Color3.fromRGB(180, 80, 255) -- Фиолетовый оттенок
+Glow.Thickness = 2
+Glow.Transparency = 0.4 -- Легкая прозрачность
+
+-- Плавное передвижение watermark'а
+local function AnimateWatermark()
+    while true do
+        local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
+        local goal = {Position = UDim2.new(0.7, 0, 0.02, 0)}
+        local tween = TweenService:Create(Watermark, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait()
+    end
+end
+
+task.spawn(AnimateWatermark)
 
             Gui.UIPadding_6.Parent = Gui.Window
             Gui.UIPadding_6.PaddingBottom = UDim.new(0, 8)
