@@ -1205,37 +1205,75 @@ local function getObjGen()
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
 
--- Создаём watermark
-local Watermark = Instance.new("TextLabel")
-Watermark.Name = "Watermark"
-Watermark.Parent = Gui.Window
-Watermark.BackgroundTransparency = 1
-Watermark.Size = UDim2.new(0.35, 0, 0.04, 0) -- Чуть шире и выше
-Watermark.Font = Enum.Font.GothamBold
-Watermark.Text = "SigmaHub | nil | nil"
-Watermark.TextColor3 = Color3.fromRGB(100, 200, 255) -- Голубой оттенок
-Watermark.TextSize = 18 -- Чуть больше размер текста
-Watermark.TextStrokeTransparency = 0
-Watermark.TextStrokeColor3 = Color3.fromRGB(50, 50, 150) -- Тёмно-синий контур
-Watermark.TextXAlignment = Enum.TextXAlignment.Left
-Watermark.Position = UDim2.new(-0.3, 0, -0.1, 0) -- Начальное положение (за экраном)
+local player = Players.LocalPlayer
 
--- Добавляем неоновый эффект свечения
+-- Получаем ссылку на аватар игрока
+local userId = player.UserId
+local avatarUrl = Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+
+-- Создаем основной контейнер
+local WatermarkFrame = Instance.new("Frame")
+WatermarkFrame.Name = "Watermark"
+WatermarkFrame.Parent = Gui.Window
+WatermarkFrame.BackgroundTransparency = 1
+WatermarkFrame.Size = UDim2.new(0.28, 0, 0.04, 0) -- Размер watermark'а
+WatermarkFrame.Position = UDim2.new(-0.3, 0, 0.02, 0) -- Появление чуть выше и левее
+
+-- Создаем текст
+local WatermarkText = Instance.new("TextLabel")
+WatermarkText.Parent = WatermarkFrame
+WatermarkText.BackgroundTransparency = 1
+WatermarkText.Size = UDim2.new(0.8, 0, 1, 0)
+WatermarkText.Font = Enum.Font.GothamBold
+WatermarkText.Text = "SigmaHub | " .. player.Name .. " | nil"
+WatermarkText.TextColor3 = Color3.fromRGB(100, 200, 255)
+WatermarkText.TextSize = 18
+WatermarkText.TextStrokeTransparency = 0
+WatermarkText.TextStrokeColor3 = Color3.fromRGB(50, 50, 150)
+WatermarkText.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Создаем эффект свечения
 local Glow = Instance.new("UIStroke")
-Glow.Parent = Watermark
-Glow.Color = Color3.fromRGB(180, 80, 255) -- Фиолетовый оттенок
-Glow.Thickness = 3 -- Более чёткое свечение
-Glow.Transparency = 0.3 -- Лёгкая прозрачность
+Glow.Parent = WatermarkText
+Glow.Color = Color3.fromRGB(180, 80, 255)
+Glow.Thickness = 2
+Glow.Transparency = 0.4
 
--- Плавное появление watermark'а (чуть выше и левее)
+-- Мини-аватар справа (аватар игрока)
+local Avatar = Instance.new("ImageLabel")
+Avatar.Parent = WatermarkFrame
+Avatar.BackgroundTransparency = 1
+Avatar.Size = UDim2.new(0.2, 0, 1, 0) -- Размер аватара
+Avatar.Position = UDim2.new(0.82, 0, 0, 0) -- Расположение справа
+Avatar.Image = avatarUrl
+Avatar.ScaleType = Enum.ScaleType.Fit
+
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = Avatar
+UICorner.CornerRadius = UDim.new(1, 0) -- Делаем аватар круглым
+
+-- Анимация появления watermark'а
 local function ShowWatermark()
     local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     local goal = {Position = UDim2.new(0.02, 0, 0.02, 0)}
-    local tween = TweenService:Create(Watermark, tweenInfo, goal)
+    local tween = TweenService:Create(WatermarkFrame, tweenInfo, goal)
     tween:Play()
 end
 task.spawn(ShowWatermark)
+
+-- Плавное движение watermark'а
+local function AnimateWatermark()
+    while true do
+        local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
+        local goal = {Position = UDim2.new(0.7, 0, 0.02, 0)}
+        local tween = TweenService:Create(WatermarkFrame, tweenInfo, goal)
+        tween:Play()
+        tween.Completed:Wait()
+    end
+end
+task.spawn(AnimateWatermark)
 
 -- Перетаскивание watermark'а
 local dragging = false
@@ -1245,7 +1283,7 @@ local function onInputBegan(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = Watermark.Position
+        startPos = WatermarkFrame.Position
     end
 end
 
@@ -1253,48 +1291,24 @@ local function onInputChanged(input)
     if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
         local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        Watermark.Position = newPos
+        WatermarkFrame.Position = newPos
     end
 end
 
 local function onInputEnded(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
-        -- Плавный возврат watermark'а после перемещения
         local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-        local goal = {Position = Watermark.Position}
-        local tween = TweenService:Create(Watermark, tweenInfo, goal)
+        local goal = {Position = WatermarkFrame.Position}
+        local tween = TweenService:Create(WatermarkFrame, tweenInfo, goal)
         tween:Play()
     end
 end
 
-Watermark.InputBegan:Connect(onInputBegan)
-Watermark.InputChanged:Connect(onInputChanged)
+WatermarkFrame.InputBegan:Connect(onInputBegan)
+WatermarkFrame.InputChanged:Connect(onInputChanged)
 UserInputService.InputEnded:Connect(onInputEnded)
 
--- Анимация watermark'а (движение туда-сюда)
-local function AnimateWatermark()
-    while true do
-        local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
-        local goal = {Position = UDim2.new(0.07, 0, 0.02, 0)}
-        local tween = TweenService:Create(Watermark, tweenInfo, goal)
-        tween:Play()
-        tween.Completed:Wait()
-    end
-end
-
-task.spawn(AnimateWatermark)
-
--- Закрытие watermark'а по нажатию Insert
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.Insert then
-        closeMenu()
-        local tweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-        local goal = {Position = UDim2.new(-0.3, 0, -0.1, 0)}
-        local tween = TweenService:Create(Watermark, tweenInfo, goal)
-        tween:Play()
-    end
-end)
 
 
 
