@@ -1,5 +1,4 @@
 local UILibrary = {}
---// Modules
 
 local function getObjGen()
     local objGen = {}
