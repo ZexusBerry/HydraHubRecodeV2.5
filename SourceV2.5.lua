@@ -1218,7 +1218,7 @@ WatermarkText.Parent = WatermarkFrame
 WatermarkText.BackgroundTransparency = 1
 WatermarkText.Size = UDim2.new(0.8, 0, 1, 0)
 WatermarkText.Font = Enum.Font.GothamBold
-WatermarkText.Text = "SigmaHub | nil | nil"
+WatermarkText.Text = "LegitHub | nil | nil"
 WatermarkText.TextColor3 = Color3.fromRGB(100, 200, 255) -- Голубой оттенок
 WatermarkText.TextSize = 16
 WatermarkText.TextStrokeTransparency = 0
@@ -3337,7 +3337,7 @@ function UILibrary.new(gameName, userId, rank)
     local Drag = Draggable.Drag(window.MainUI, Frame)
 
     --// Customize the GUI
-    window.Watermark.Text = ("SigmaHub | %s | %s"):format(userId, gameName)
+    window.Watermark.Text = ("LegitHub | %s | %s"):format(userId, gameName)
     local userinfo = window.MainUI.Sidebar.ContentHolder.UserInfo.Content
     userinfo.Rank.Text = rank
     userinfo.Title.Text = userId
