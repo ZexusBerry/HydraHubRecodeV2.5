@@ -1203,7 +1203,6 @@ local function getObjGen()
             Gui.Window.Size = UDim2.new(1, 0, 1, 0)
 
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 
 local Watermark = Instance.new("TextLabel")
 Watermark.Name = "Watermark"
@@ -1226,42 +1225,7 @@ Glow.Color = Color3.fromRGB(180, 80, 255) -- Фиолетовый оттенок
 Glow.Thickness = 2
 Glow.Transparency = 0.4 -- Легкая прозрачность
 
--- Флаг для отслеживания перемещения
-local dragging = false
-local dragStart, startPos
-
-local function onInputBegan(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = Watermark.Position
-    end
-end
-
-local function onInputChanged(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        Watermark.Position = newPos
-    end
-end
-
-local function onInputEnded(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-        -- Плавный возврат watermark'а после перемещения
-        local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-        local goal = {Position = Watermark.Position}
-        local tween = TweenService:Create(Watermark, tweenInfo, goal)
-        tween:Play()
-    end
-end
-
-Watermark.InputBegan:Connect(onInputBegan)
-Watermark.InputChanged:Connect(onInputChanged)
-UserInputService.InputEnded:Connect(onInputEnded)
-
--- Плавное движение watermark'а (цикличное)
+-- Плавное передвижение watermark'а
 local function AnimateWatermark()
     while true do
         local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut, 0, true)
