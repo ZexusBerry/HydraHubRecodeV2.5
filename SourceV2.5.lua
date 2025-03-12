@@ -2426,6 +2426,8 @@ task.spawn(AnimateWatermark)
             Gui.Line_5.LayoutOrder = -1
             Gui.Line_5.Size = UDim2.new(0, 1, 1, 0)
             Gui.Line_5.ZIndex = 11
+            
+            local UIObjects = initObj() -- Исправлено
 
             Gui.Buttons_3.Name = "Buttons"
             Gui.Buttons_3.Parent = Gui.Content_11
@@ -2491,77 +2493,77 @@ task.spawn(AnimateWatermark)
             Gui.Title_5.TextSize = 20.000
             Gui.Title_5.TextWrapped = true
             Gui.Title_5.TextXAlignment = Enum.TextXAlignment.Left
+-- Создаем объекты, если они не заданы
+Gui.Desc_3 = Gui.Desc_3 or Instance.new("TextLabel")
+Gui.Text_10 = Gui.Text_10 or Instance.new("Frame")
+Gui.Main_2 = Gui.Main_2 or Instance.new("Frame")
+Gui.Notification_3 = Gui.Notification_3 or Instance.new("Frame")
+Gui.UICorner_23 = Gui.UICorner_23 or Instance.new("UICorner")
+Gui.UIAspectRatioConstraint_17 = Gui.UIAspectRatioConstraint_17 or Instance.new("UIAspectRatioConstraint")
 
-            Gui.Desc_3.Name = "Desc"
-            Gui.Desc_3.Parent = Gui.Text_10
-            Gui.Desc_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Gui.Desc_3.BackgroundTransparency = 1.000
-            Gui.Desc_3.Size = UDim2.new(1, 0, 0.400000006, 0)
-            Gui.Desc_3.ZIndex = 12
-            Gui.Desc_3.Font = Enum.Font.Gotham
-            Gui.Desc_3.Text = "Would you like to start autofarm?"
-            Gui.Desc_3.TextColor3 = Color3.fromRGB(150, 150, 150)
-            Gui.Desc_3.TextSize = 14.000
-            Gui.Desc_3.TextWrapped = true
-            Gui.Desc_3.TextXAlignment = Enum.TextXAlignment.Left
+-- Устанавливаем свойства
+Gui.Desc_3.Name = "Desc"
+Gui.Desc_3.Parent = Gui.Text_10
+Gui.Desc_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Gui.Desc_3.BackgroundTransparency = 1.000
+Gui.Desc_3.Size = UDim2.new(1, 0, 0.400000006, 0)
+Gui.Desc_3.ZIndex = 12
+Gui.Desc_3.Font = Enum.Font.Gotham
+Gui.Desc_3.Text = "Would you like to start autofarm?"
+Gui.Desc_3.TextColor3 = Color3.fromRGB(150, 150, 150)
+Gui.Desc_3.TextSize = 14.000
+Gui.Desc_3.TextWrapped = true
+Gui.Desc_3.TextXAlignment = Enum.TextXAlignment.Left
 
-            Gui.UIPadding_14.Parent = Gui.Text_10
-            Gui.UIPadding_14.PaddingBottom = UDim.new(0, 4)
-            Gui.UIPadding_14.PaddingLeft = UDim.new(0, 8)
-            Gui.UIPadding_14.PaddingRight = UDim.new(0, 4)
-            Gui.UIPadding_14.PaddingTop = UDim.new(0, 4)
-
-            Gui.Notification_3.Name = "Notification"
-            Gui.Notification_3.Parent = Gui.Main_2
-            Gui.Notification_3.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-            Gui.Notification_3.BorderSizePixel = 0
-            Gui.Notification_3.Size = UDim2.new(1, 0, 1, 0)
-            Gui.Notification_3.ZIndex = 20
-
-            Gui.UICorner_23.CornerRadius = UDim.new(0.0500000007, 0)
-            Gui.UICorner_23.Parent = Gui.Notification_3
-
-            Gui.UIAspectRatioConstraint_17.Parent = Gui.Main_2
-            Gui.UIAspectRatioConstraint_17.AspectRatio = 2.788
-
+-- Создаем контейнер UI объектов
 Gui.UIObjects = Instance.new("Folder")
 Gui.UIObjects.Name = "UIObjects"
 Gui.UIObjects.Parent = Gui.Main_2
 
 return Gui.UIObjects
 
-        end
+end
 
-        return initObj()
-    end
-
-    local UIObjects = getObjects()
+-- Инициализация UI объектов
+local UIObjects = initObj()
+if UIObjects then
     UIObjects.Parent = script
+else
+    warn("Ошибка: UIObjects не найден!")
+end
 
+-- Проверяем, существует ли script.UIObjects
+if script:FindFirstChild("UIObjects") then
     for i, v in pairs(script.UIObjects:GetChildren()) do
         v.Parent = v.Parent.Parent
     end
-
     script.UIObjects:Destroy()
+else
+    warn("Ошибка: script.UIObjects не найден!")
+end
 
-    function objGen.new(objectType, cheatName)
-        if objectType == "Cheat" then
-            if script.Cheats:FindFirstChild(cheatName) then
-                return script.Cheats[cheatName]:Clone()
-            else
-                error("Invalid cheatType")
-            end
-        end
+-- Функция для генерации объектов
+function objGen.new(objectType, cheatName)
+    if not script:FindFirstChild("Cheats") or not script:FindFirstChild("Objects") then
+        error("Ошибка: script.Cheats или script.Objects не найдены!")
+    end
 
-        if script.Objects:FindFirstChild(objectType) then
-            return script.Objects[objectType]:Clone()
+    if objectType == "Cheat" then
+        if script.Cheats:FindFirstChild(cheatName) then
+            return script.Cheats[cheatName]:Clone()
         else
-            error("Invalid objectType")
+            error("Ошибка: Invalid cheatType")
         end
     end
 
-    return objGen
+    if script.Objects:FindFirstChild(objectType) then
+        return script.Objects[objectType]:Clone()
+    else
+        error("Ошибка: Invalid objectType")
+    end
 end
+
+return objGen
 
 local objectGenerator = getObjGen()
 
