@@ -2524,7 +2524,12 @@ task.spawn(AnimateWatermark)
             Gui.UIAspectRatioConstraint_17.Parent = Gui.Main_2
             Gui.UIAspectRatioConstraint_17.AspectRatio = 2.788
 
-            return Gui.UIObjects
+Gui.UIObjects = Instance.new("Folder")
+Gui.UIObjects.Name = "UIObjects"
+Gui.UIObjects.Parent = Gui.Main_2
+
+return Gui.UIObjects
+
         end
 
         return initObj()
